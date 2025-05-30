@@ -34,5 +34,6 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
-
+    'devi_tools_authorization_url' => env('DEVI_TOOLS_AUTHORIZATION_URL'),
+    'devi_tools_notifications_url' => env('DEVI_TOOLS_NOTIFICATIONS_URL'),
 ];
