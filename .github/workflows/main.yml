@@ -37,8 +37,11 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
 
+      - name: Install pint
+        run: composer global require laravel/pint
+
       - name: Run pint
-        run: vendor/bin/pint
+        run: pint
 
       - name: Push changes
         run: |
