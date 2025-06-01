@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\TransactionAuthorization;
+use App\Contracts\TransactionNotification;
+use App\Services\DeviToolsTransactionAuthorization;
+use App\Services\DeviToolsTransactionNotification;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +23,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->app->bind(
+            TransactionAuthorization::class,
+            DeviToolsTransactionAuthorization::class
+        );
+
+        $this->app->bind(
+            TransactionNotification::class,
+            DeviToolsTransactionNotification::class
+        );
     }
 }

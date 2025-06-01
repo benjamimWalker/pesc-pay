@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class DeviToolsTransactionNotification implements TransactionNotification
 {
-    private $url;
+    private string $url;
 
     public function __construct()
     {

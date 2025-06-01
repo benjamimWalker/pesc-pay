@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 class DeviToolsTransactionAuthorization implements TransactionAuthorization
 {
-    private $url;
+    private string $url;
 
     public function __construct()
     {
