@@ -6,7 +6,7 @@ use App\Models\Wallet;
 
 class BalanceDeposit
 {
-    public function handle(int $userId, float $amount)
+    public function handle(int $userId, float $amount): void
     {
         Wallet::whereUserId($userId)
             ->increment('balance', $amount);
