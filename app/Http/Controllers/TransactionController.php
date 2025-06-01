@@ -11,8 +11,7 @@ class TransactionController extends Controller
     public function create(
         CreateTransactionRequest $request,
         MakeTransaction $makeTransaction
-    )
-    {
+    ) {
         $makeTransaction->handle($request);
 
         return response()->json(['message' => 'Transaction completed successfully.'], Response::HTTP_CREATED);

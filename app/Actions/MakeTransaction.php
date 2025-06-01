@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Contracts\TransactionNotification;
 use Illuminate\Support\Facades\DB;
+
 use function Illuminate\Support\defer;
 
 readonly class MakeTransaction
@@ -29,6 +30,6 @@ readonly class MakeTransaction
             );
         });
 
-        defer(fn() => $this->notification->notify());
+        defer(fn () => $this->notification->notify());
     }
 }
