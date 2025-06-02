@@ -5,8 +5,8 @@ namespace App\Actions;
 use App\Contracts\TransactionNotification;
 use App\Enums\TransactionStatusEnum;
 use Illuminate\Support\Facades\DB;
-
 use Throwable;
+
 use function Illuminate\Support\defer;
 
 readonly class MakePayment
