@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 use function Illuminate\Support\defer;
 
-readonly class MakeTransaction
+readonly class MakePayment
 {
     public function __construct(
         private BalanceDeposit $deposit,

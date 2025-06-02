@@ -1,7 +1,7 @@
 <?php
 
 use App\Actions\BalanceDeposit;
-use App\Actions\MakeTransaction;
+use App\Actions\MakePayment;
 use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Http;
@@ -251,7 +251,7 @@ it('rolls back if deposit fails', function () {
 
     app()->instance(BalanceDeposit::class, $depositMock);
 
-    $transaction = app(MakeTransaction::class);
+    $transaction = app(MakePayment::class);
 
     $payload = (object) [
         'payer' => $payer->id,
