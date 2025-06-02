@@ -17,7 +17,7 @@ class DeviToolsTransactionNotification implements TransactionNotification
     public function notify(): bool
     {
         return Http::post($this->url, [
-            'message' => 'Transaction completed successfully.',
+            'message' => 'Transaction completed successfully',
         ])->successful();
     }
 }

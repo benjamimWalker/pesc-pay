@@ -2,6 +2,7 @@
 
 use App\Actions\BalanceDeposit;
 use App\Actions\MakePayment;
+use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Support\Facades\Http;
@@ -14,7 +15,7 @@ beforeEach(function () {
 
 function walletBalance(int $userId): int
 {
-    return Wallet::whereUserId($userId)->first()->balance;
+    return Wallet::whereUserId($userId)->first()?->balance ?? 0;
 }
 
 it('creates a transaction from a common user to a merchant', function () {
@@ -39,15 +40,21 @@ it('creates a transaction from a common user to a merchant', function () {
 
     $this->postJson(ENDPOINT, $payload)
         ->assertCreated()
-        ->assertJson(['message' => 'Transaction completed successfully.']);
+        ->assertJson(['message' => 'Transaction completed successfully']);
 
-    expect(walletBalance($payer->id))->toBe(1000 - $transferAmount)
-        ->and(walletBalance($payee->id))->toBe(200 + $transferAmount);
+    expect(walletBalance($payer->id))->toBe(900)
+        ->and(walletBalance($payee->id))->toBe(300);
+
+    $transaction = Transaction::latest()->first();
+    expect($transaction->payer_id)->toBe($payer->id)
+        ->and($transaction->payee_id)->toBe($payee->id)
+        ->and($transaction->amount)->toBe($transferAmount)
+        ->and($transaction->status)->toBe('completed');
 
     Http::assertSent(function ($request) {
         return $request->url() === 'http://fake-notify-url.test'
             && $request->method() === 'POST'
-            && $request->data()['message'] === 'Transaction completed successfully.';
+            && $request->data()['message'] === 'Transaction completed successfully';
     });
 });
 
@@ -73,15 +80,21 @@ it('creates a transaction from a common user to another common user', function (
 
     $this->postJson(ENDPOINT, $payload)
         ->assertCreated()
-        ->assertJson(['message' => 'Transaction completed successfully.']);
+        ->assertJson(['message' => 'Transaction completed successfully']);
 
-    expect(walletBalance($payer->id))->toBe(500 - $transferAmount)
-        ->and(walletBalance($payee->id))->toBe(100 + $transferAmount);
+    expect(walletBalance($payer->id))->toBe(450)
+        ->and(walletBalance($payee->id))->toBe(150);
+
+    $transaction = Transaction::latest()->first();
+    expect($transaction->payer_id)->toBe($payer->id)
+        ->and($transaction->payee_id)->toBe($payee->id)
+        ->and($transaction->amount)->toBe($transferAmount)
+        ->and($transaction->status)->toBe('completed');
 
     Http::assertSent(function ($request) {
         return $request->url() === 'http://fake-notify-url.test'
             && $request->method() === 'POST'
-            && $request->data()['message'] === 'Transaction completed successfully.';
+            && $request->data()['message'] === 'Transaction completed successfully';
     });
 });
 
@@ -138,7 +151,6 @@ it('fails if payer does not have enough balance', function () {
     expect(walletBalance($payer->id))->toBe(10)
         ->and(walletBalance($payee->id))->toBe(50);
 });
-
 
 it('fails if payee and payer are the same', function () {
     fakeSuccessfulCalls();
@@ -234,7 +246,6 @@ it('fails if authorization service denies', function () {
         ->and(walletBalance($payee->id))->toBe(100);
 });
 
-
 it('rolls back if deposit fails', function () {
     $payer = User::factory()->create(['type' => 'common']);
     $payee = User::factory()->create(['type' => 'common']);
@@ -266,5 +277,47 @@ it('rolls back if deposit fails', function () {
     }
 
     expect(walletBalance($payer->id))->toBe(1000)
+        ->and(walletBalance($payee->id))->toBe(200);
+});
+
+it('creates a transaction with failed status if deposit fails', function () {
+    $payer = User::factory()->create(['type' => 'common']);
+    $payee = User::factory()->create(['type' => 'common']);
+
+    Wallet::factory()->create(['user_id' => $payer->id, 'balance' => 1000]);
+    Wallet::factory()->create(['user_id' => $payee->id, 'balance' => 200]);
+
+    $amount = 100;
+
+    $depositMock = mock(BalanceDeposit::class)
+        ->expects('handle')
+        ->andThrow(new Exception('Deposit failure'))
+        ->getMock();
+
+    app()->instance(BalanceDeposit::class, $depositMock);
+
+    $transactionService = app(MakePayment::class);
+
+    $payload = (object) [
+        'payer' => $payer->id,
+        'payee' => $payee->id,
+        'value' => $amount,
+    ];
+
+    try {
+        $transactionService->handle($payload);
+    } catch (Exception $e) {
+        expect($e->getMessage())->toBe('Deposit failure');
+    }
+
+    $failedTransaction = Transaction::where('payer_id', $payer->id)
+        ->where('payee_id', $payee->id)
+        ->where('amount', $amount)
+        ->latest()
+        ->first();
+
+    expect($failedTransaction)->not()->toBeNull()
+        ->and($failedTransaction->status)->toBe('failed')
+        ->and(walletBalance($payer->id))->toBe(1000)
         ->and(walletBalance($payee->id))->toBe(200);
 });

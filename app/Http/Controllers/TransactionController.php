@@ -9,10 +9,10 @@ use Symfony\Component\HttpFoundation\Response;
 
 class TransactionController extends Controller
 {
-    public function create(CreateTransactionRequest $request, MakePayment $makeTransaction): JsonResponse
+    public function create(CreateTransactionRequest $request, MakePayment $makePayment): JsonResponse
     {
-        $makeTransaction->handle($request);
+        $makePayment->handle($request);
 
-        return response()->json(['message' => 'Transaction completed successfully.'], Response::HTTP_CREATED);
+        return response()->json(['message' => 'Transaction completed successfully'], Response::HTTP_CREATED);
     }
 }
