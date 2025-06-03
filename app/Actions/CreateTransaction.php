@@ -13,7 +13,7 @@ class CreateTransaction
             'payer_id' => $transactionPayload->payer,
             'payee_id' => $transactionPayload->payee,
             'original_transaction_id' => $originalTransaction,
-            'amount' => $transactionPayload->value,
+            'amount' => $transactionPayload->amount,
             'status' => $status->name
         ]);
     }

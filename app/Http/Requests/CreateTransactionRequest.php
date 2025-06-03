@@ -17,7 +17,7 @@ class CreateTransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'value' => ['required', 'numeric', 'min:0.01', 'max:999999999'],
+            'amount' => ['required', 'numeric', 'min:0.01', 'max:999999999'],
             'payer' => [
                 'required',
                 'integer',
@@ -25,7 +25,7 @@ class CreateTransactionRequest extends FormRequest
                     $query->where('type', 'common');
                 }),
                 Rule::exists('wallets', 'user_id')->where(function (Builder $query) {
-                    $query->where('balance', '>=', $this?->value ?? 0);
+                    $query->where('balance', '>=', $this?->amount ?? 0);
                 })
             ],
             'payee' => [

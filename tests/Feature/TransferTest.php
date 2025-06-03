@@ -35,7 +35,7 @@ it('creates a transaction from a common user to a merchant', function () {
     $payload = [
         'payer' => $payer->id,
         'payee' => $payee->id,
-        'value' => $transferAmount,
+        'amount' => $transferAmount,
     ];
 
     $this->postJson(ENDPOINT, $payload)
@@ -75,7 +75,7 @@ it('creates a transaction from a common user to another common user', function (
     $payload = [
         'payer' => $payer->id,
         'payee' => $payee->id,
-        'value' => $transferAmount,
+        'amount' => $transferAmount,
     ];
 
     $this->postJson(ENDPOINT, $payload)
@@ -110,7 +110,7 @@ it('fails if a merchant tries to send money', function () {
     $payload = [
         'payer' => $payer->id,
         'payee' => $payee->id,
-        'value' => 50,
+        'amount' => 50,
     ];
 
     $this->postJson(ENDPOINT, $payload)
@@ -137,7 +137,7 @@ it('fails if payer does not have enough balance', function () {
     $payload = [
         'payer' => $payer->id,
         'payee' => $payee->id,
-        'value' => 100,
+        'amount' => 100,
     ];
 
     $this->postJson(ENDPOINT, $payload)
@@ -161,7 +161,7 @@ it('fails if payee and payer are the same', function () {
     $payload = [
         'payer' => $user->id,
         'payee' => $user->id,
-        'value' => 10,
+        'amount' => 10,
     ];
 
     $this->postJson(ENDPOINT, $payload)
@@ -186,7 +186,7 @@ it('fails if payer wallet is missing', function () {
     $payload = [
         'payer' => $payer->id,
         'payee' => $payee->id,
-        'value' => 20,
+        'amount' => 20,
     ];
 
     $this->postJson(ENDPOINT, $payload)
@@ -210,7 +210,7 @@ it('fails if payee does not exist', function () {
     $payload = [
         'payer' => $payer->id,
         'payee' => 9999,
-        'value' => 10,
+        'amount' => 10,
     ];
 
     $this->postJson(ENDPOINT, $payload)
@@ -236,7 +236,7 @@ it('fails if authorization service denies', function () {
     $payload = [
         'payer' => $payer->id,
         'payee' => $payee->id,
-        'value' => 100,
+        'amount' => 100,
     ];
 
     $this->postJson(ENDPOINT, $payload)
@@ -267,7 +267,7 @@ it('rolls back if deposit fails', function () {
     $payload = (object) [
         'payer' => $payer->id,
         'payee' => $payee->id,
-        'value' => $amount,
+        'amount' => $amount,
     ];
 
     try {
@@ -301,7 +301,7 @@ it('creates a transaction with failed status if deposit fails', function () {
     $payload = (object) [
         'payer' => $payer->id,
         'payee' => $payee->id,
-        'value' => $amount,
+        'amount' => $amount,
     ];
 
     try {

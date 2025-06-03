@@ -23,15 +23,8 @@ readonly class MakePayment
     {
         try {
             DB::transaction(function () use ($transactionPayload) {
-                $this->withdraw->handle(
-                    $transactionPayload->payer,
-                    $transactionPayload->value
-                );
-
-                $this->deposit->handle(
-                    $transactionPayload->payee,
-                    $transactionPayload->value
-                );
+                $this->withdraw->handle($transactionPayload->payer, $transactionPayload->amount);
+                $this->deposit->handle($transactionPayload->payee, $transactionPayload->amount);
 
                 $this->createTransaction->handle($transactionPayload, TransactionStatusEnum::completed);
             });
