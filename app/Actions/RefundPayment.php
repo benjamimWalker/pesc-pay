@@ -12,15 +12,13 @@ use function Illuminate\Support\defer;
 
 readonly class RefundPayment
 {
-
     public function __construct(
         private BalanceDeposit          $deposit,
         private BalanceWithdraw         $withdraw,
         private TransactionNotification $notification,
         private CreateTransaction       $createTransaction,
         private RefundTransaction       $refundTransaction,
-    )
-    {
+    ) {
     }
 
     public function handle(Transaction $transaction): void
@@ -55,6 +53,6 @@ readonly class RefundPayment
             throw $e;
         }
 
-        defer(fn() => $this->notification->notify());
+        defer(fn () => $this->notification->notify());
     }
 }
