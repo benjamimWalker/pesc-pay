@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Actions\MakePayment;
 use App\Actions\RefundPayment;
 use App\Http\Requests\CreateTransactionRequest;
+use App\Http\Requests\RefundTransactionRequest;
 use App\Models\Transaction;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,10 +19,10 @@ class TransactionController extends Controller
         return response()->json(['message' => 'Transaction completed successfully'], Response::HTTP_CREATED);
     }
 
-    public function refund(Transaction $transaction, RefundPayment $refundPayment): JsonResponse
+    public function refund(RefundTransactionRequest $request, Transaction $transaction, RefundPayment $refundPayment): JsonResponse
     {
         $refundPayment->handle($transaction);
 
-        return response()->json(['message' => 'Transaction refunded successfully'], Response::HTTP_OK);
+        return response()->json(['message' => 'Transaction refunded successfully']);
     }
 }
