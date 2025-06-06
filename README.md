@@ -57,6 +57,11 @@ docker compose exec app composer install
 docker compose exec app php artisan migrate
 ```
 
+* Run the seeder:
+```sh
+docker compose exec app php artisan db:seed
+```
+
 * You can now execute the tests:
 ```sh
 docker compose exec app php artisan test
